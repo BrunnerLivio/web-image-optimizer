@@ -2,6 +2,8 @@
 declare -a SIZES=("1500" "1200" "770" "400")
 FILENAME=""
 OUTPUTFORMAT=""
+GREEN='\033[0;32m'
+NC='\033[0m'
 
 while true
 do
@@ -33,3 +35,12 @@ done
 if [ "$OUTPUTFORMAT" == "jpg" ]; then
   jpegoptim *.jpg
 fi
+echo "Example:"
+echo -e "${GREEN}<picture>"
+for i in "${SIZES[@]}"
+do
+  MINWIDTH="$(($i - 200))";
+  echo "  <source media=\"(min-width: ${MINWIDTH}px)\" srcset=\"${filename}_${i}x.${OUTPUTFORMAT}\">"
+done
+echo "  <img src=\"$IMAGE\">"
+echo -e "</picture>${NC}"
