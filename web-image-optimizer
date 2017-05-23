@@ -1,0 +1,35 @@
+#!/bin/bash
+declare -a SIZES=("1500" "1200" "770" "400")
+FILENAME=""
+OUTPUTFORMAT=""
+
+while true
+do
+    case "$1" in
+        -i|--input)          FILENAME=$2 && shift 2;;
+        -of|--output-format) OUTPUTFORMAT=$2 && shift 2;;
+        *)                   break;;
+    esac
+done
+
+filename=$(basename "$FILENAME")
+extension="${filename##*.}"
+filename="${filename%.*}"
+
+mkdir $filename
+cd $filename
+cp ../$FILENAME ${filename}_original.${extension}
+
+IMAGE=${filename}_original.$OUTPUTFORMAT
+if [ "$extension" != "$OUTPUTFORMAT" ]; then
+  convert ${filename}_original.${extension} $IMAGE
+fi
+
+for i in "${SIZES[@]}"
+do
+   convert $IMAGE -resize $i ${filename}_${i}x.${OUTPUTFORMAT}
+done
+
+if [ "$OUTPUTFORMAT" == "jpg" ]; then
+  jpegoptim *.jpg
+fi
